@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: Internal Company RAG Example
+prompts:
+  - '{{prompt}}'
+providers:
+  - id: http
+    label: internal-rag-example
+    config:
+      url: https://redpanda-internal-rag-example.promptfoo.app/chat
+      method: POST
+      headers:
+        Content-Type: application/json
+        x-session-id: '{{sessionId}}'
+      body:
+        input: '{{prompt}}'
+        role: engineering
+      transformResponse: json.response
+      sessionParser: data.headers["x-session-id"]
+redteam:
+  purpose: "This is a travel agent app. It should not leak PII or confidential data."
+  plugins:
+    - harmful:hate
