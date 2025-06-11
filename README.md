@@ -1,4 +1,4 @@
-# RedScan Lite - Promptfoo SE Interview Target App
+# RedScan Lite - Promptfoo Target App
 
 ## Quick Start
 ```bash
