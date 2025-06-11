@@ -44,7 +44,8 @@ app.post('/session', (req, res) => {
   const sessionId = uuidv4();
   sessions.set(sessionId, {
     createdAt: Date.now(),
-    messages: []
+    messages: [],
+    requestCount: 0
   });
   
   res.json({ sessionId });
@@ -84,17 +85,44 @@ app.post('/chat', async (req, res) => {
     sessionId = uuidv4();
     sessions.set(sessionId, {
       createdAt: Date.now(),
-      messages: []
+      messages: [],
+      requestCount: 0
     });
     responseHeaders['x-session-id'] = sessionId;
   }
   
   const session = sessions.get(sessionId);
   if (session) {
+    session.requestCount = (session.requestCount || 0) + 1;
     session.messages.push({ role: 'user', content: input });
   }
   
+  // Check if this is the 3rd request (or multiple of 3) for this session
+  if (session && session.requestCount % 3 === 0) {
+    // Return an irregular response for debugging practice
+    const mockUsage = {
+      prompt_tokens: Math.floor(Math.random() * 50) + 10,
+      completion_tokens: Math.floor(Math.random() * 100) + 20,
+      total_tokens: 0
+    };
+    mockUsage.total_tokens = mockUsage.prompt_tokens + mockUsage.completion_tokens;
+    
+    const irregularResponses = [
+      { msg: "Irregular response format", status: "ok", usage: mockUsage }, // Different structure
+      { data: { text: "Response corrupted", original: input }, error: null, tokenInfo: mockUsage }, // Nested structure, different key
+      { output: ["Multiple", "responses", "in", "array"], tokens: mockUsage }, // Array response
+      { message: "Response", metadata: { debug: true, sessionRequests: session.requestCount }, usage: mockUsage }, // Extra fields
+      { response: { message: "Wrapped response", timestamp: Date.now() }, usage: { tokens: mockUsage } }, // Different key name, nested usage
+      { content: "Different key", usage: mockUsage.total_tokens } // Usage as just a number
+    ];
+    
+    const randomIrregular = irregularResponses[Math.floor(Math.random() * irregularResponses.length)];
+    console.log(`[DEBUG] Returning irregular response for session ${sessionId}, request #${session.requestCount}`);
+    return res.set(responseHeaders).json(randomIrregular);
+  }
+  
   let message;
+  let tokenUsage = null;
   
   if (openai) {
     try {
@@ -109,19 +137,39 @@ app.post('/chat', async (req, res) => {
       });
       
       message = completion.choices[0].message.content;
+      // Extract token usage from OpenAI response
+      if (completion.usage) {
+        tokenUsage = {
+          prompt_tokens: completion.usage.prompt_tokens,
+          completion_tokens: completion.usage.completion_tokens,
+          total_tokens: completion.usage.total_tokens
+        };
+      }
     } catch (error) {
       console.error('OpenAI API error:', error);
       message = `You said: ${input}`;
+      // Mock token usage for fallback
+      tokenUsage = {
+        prompt_tokens: input.length,
+        completion_tokens: message.length,
+        total_tokens: input.length + message.length
+      };
     }
   } else {
     message = `You said: ${input}`;
+    // Mock token usage for echo mode
+    tokenUsage = {
+      prompt_tokens: input.length,
+      completion_tokens: message.length,
+      total_tokens: input.length + message.length
+    };
   }
   
   if (session) {
     session.messages.push({ role: 'assistant', content: message });
   }
   
-  res.set(responseHeaders).json({ message });
+  res.set(responseHeaders).json({ message, usage: tokenUsage });
 });
 
 app.listen(PORT, () => {
