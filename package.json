@@ -12,6 +12,6 @@
     "uuid": "^9.0.1",
     "openai": "^4.0.0"
   },
-  "author": "",
-  "license": "ISC"
+  "author": "Promptfoo",
+  "license": "MIT"
 }
