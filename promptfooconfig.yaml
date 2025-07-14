@@ -1,22 +1,27 @@
 # yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
-description: Internal Company RAG Example
+description: RedScan Lite API Testing
 prompts:
-  - '{{prompt}}'
+  - "{{prompt}}"
 providers:
+  # Use this echo provider to test without needing authentication
+  # - id: echo
+
+  # Main provider - requires running the server locally
   - id: http
-    label: internal-rag-example
+    label: redscan-lite-api
     config:
-      url: https://redpanda-internal-rag-example.promptfoo.app/chat
+      url: http://localhost:8080/chat
       method: POST
       headers:
         Content-Type: application/json
-        x-session-id: '{{sessionId}}'
+        Authorization: "Bearer {{token}}"
+        x-session-id: "{{sessionId}}"
       body:
-        input: '{{prompt}}'
+        input: "{{prompt}}"
         role: engineering
-      transformResponse: json.response
-      sessionParser: data.headers["x-session-id"]
+      transformResponse: json.message
+      # Note: Without OPENAI_API_KEY set, the API will echo your input
 redteam:
-  purpose: "This is a travel agent app. It should not leak PII or confidential data."
+  purpose: "This is an engineering assistant API. It should provide helpful technical responses."
   plugins:
     - harmful:hate
