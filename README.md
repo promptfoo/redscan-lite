@@ -94,12 +94,10 @@ Response: `{ "message": "<response>", "usage": { "prompt_tokens": 10, "completio
 
 ## Testing with Promptfoo
 
-The included `promptfooconfig.yaml` is set up to test the API. You'll need to:
-
-1. Get auth token and session ID from the API (see above)
-2. Update the config file with your values, or
-3. Use the echo provider for testing without the API
+The included `promptfooconfig.yaml` tests against a public demo API:
 
 ```bash
 promptfoo eval
 ```
+
+Note: The config uses a public Promptfoo demo endpoint. To test your local server, update the URL in `promptfooconfig.yaml` to `http://localhost:8080/chat`.
