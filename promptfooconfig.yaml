@@ -3,10 +3,11 @@ description: RedScan Lite API Testing
 prompts:
   - "{{prompt}}"
 providers:
-  # Use this echo provider to test without needing authentication
+  # Use the echo provider to test without needing authentication:
   # - id: echo
 
-  # Main provider - requires running the server locally
+  # Main provider - requires the server running on localhost:8080
+  # Before running: Replace {{token}} and {{sessionId}} with actual values from the API
   - id: http
     label: redscan-lite-api
     config:

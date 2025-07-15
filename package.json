@@ -1,7 +1,7 @@
 {
   "name": "redscan-lite",
   "version": "1.0.0",
-  "description": "Target app for Promptfoo SE interviews",
+  "description": "Simple chat API server for testing with Promptfoo",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"

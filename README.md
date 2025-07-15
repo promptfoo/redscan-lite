@@ -1,6 +1,6 @@
 # RedScan Lite
 
-A simple chat API server for testing with Promptfoo - perfect for SE interviews.
+A simple chat API server designed for testing with Promptfoo.
 
 ## Getting Started
 
@@ -50,7 +50,7 @@ cd redscan-lite
    npm start
    ```
 
-   The server will run at http://localhost:8080
+   The server runs on http://localhost:8080
 
 4. **Optional: Enable AI responses**
    ```bash
@@ -68,7 +68,7 @@ The API requires authentication. Here's the complete flow:
 curl -X POST http://localhost:8080/auth
 ```
 
-Response: `{ "token": "<uuid>", "ttl": 300 }`
+Response: `{ "token": "550e8400-e29b-41d4-a716-446655440001", "ttl": 300 }`
 
 ### 2. Create a session
 
@@ -76,7 +76,7 @@ Response: `{ "token": "<uuid>", "ttl": 300 }`
 curl -X POST http://localhost:8080/session
 ```
 
-Response: `{ "sessionId": "<uuid>" }`
+Response: `{ "sessionId": "660e8400-e29b-41d4-a716-446655440002" }`
 
 ### 3. Send messages
 
@@ -90,14 +90,16 @@ curl -X POST http://localhost:8080/chat \
 
 Response: `{ "message": "<response>", "usage": { "prompt_tokens": 10, "completion_tokens": 15, "total_tokens": 25 } }`
 
-Note: If no session ID is provided, one will be created and returned in the `x-session-id` response header.
+**Note:** If no session ID is provided, one will be created and returned in the `x-session-id` response header.
 
 ## Testing with Promptfoo
 
-Run Promptfoo evaluation:
+The included `promptfooconfig.yaml` is set up to test the API. You'll need to:
+
+1. Get auth token and session ID from the API (see above)
+2. Update the config file with your values, or
+3. Use the echo provider for testing without the API
 
 ```bash
 promptfoo eval
 ```
-
-See `promptfooconfig.yaml` for configuration details.
