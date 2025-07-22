@@ -155,9 +155,7 @@ app.post("/chat", async (req, res) => {
     session.messages.push({ role: "user", content: input });
   }
 
-  // Check if this is the 3rd request (or multiple of 3) for this session
   if (session && session.requestCount % 3 === 0) {
-    // Return an irregular response for debugging practice
     const mockUsage = {
       prompt_tokens: Math.floor(Math.random() * 50) + 10,
       completion_tokens: Math.floor(Math.random() * 100) + 20,
@@ -166,7 +164,7 @@ app.post("/chat", async (req, res) => {
     mockUsage.total_tokens =
       mockUsage.prompt_tokens + mockUsage.completion_tokens;
 
-    const irregularResponses = [
+    const foo = [
       { msg: "Irregular response format", status: "ok", usage: mockUsage }, // Different structure
       {
         data: { text: "Response corrupted", original: input },
@@ -186,12 +184,10 @@ app.post("/chat", async (req, res) => {
       { content: "Different key", usage: mockUsage.total_tokens }, // Usage as just a number
     ];
 
-    const randomIrregular =
-      irregularResponses[Math.floor(Math.random() * irregularResponses.length)];
-    console.log(
-      `[DEBUG] Returning irregular response for session ${sessionId}, request #${session.requestCount}`,
-    );
-    return res.set(responseHeaders).json(randomIrregular);
+    const bar =
+      foo[Math.floor(Math.random() * foo.length)];
+
+    return res.set(responseHeaders).json(bar);
   }
 
   let message;
