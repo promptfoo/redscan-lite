@@ -22,6 +22,19 @@ function logRequest(endpoint, method, headers, body) {
   );
 }
 
+/**
+ * Returns an auth token and its TTL.
+ *
+ * Example request:
+ * ```sh
+ * curl -X POST http://localhost:8080/auth
+ * ```
+ *
+ * Response:
+ * ```json
+ * { "token": "550e8400-e29b-41d4-a716-446655440001", "ttl": 300 }
+ * ```
+ */
 app.post("/auth", (req, res) => {
   logRequest("/auth", "POST", req.headers, req.body);
 
@@ -40,6 +53,19 @@ app.post("/auth", (req, res) => {
   res.json({ token, ttl });
 });
 
+/**
+ * Creates a session.
+ *
+ * Example request:
+ * ```sh
+ * curl -X POST http://localhost:8080/session
+ * ```
+ *
+ * Response:
+ * ```json
+ * { "sessionId": "660e8400-e29b-41d4-a716-446655440002" }
+ * ```
+ */
 app.post("/session", (req, res) => {
   logRequest("/session", "POST", req.headers, req.body);
 
@@ -53,6 +79,32 @@ app.post("/session", (req, res) => {
   res.json({ sessionId });
 });
 
+/**
+ * Sends a message to the API.
+ *
+ * Example request:
+ * ```sh
+ * curl -X POST http://localhost:8080/chat \
+ *   -H "Authorization: Bearer YOUR_TOKEN" \
+ *   -H "x-session-id: YOUR_SESSION_ID" \
+ *   -H "Content-Type: application/json" \
+ *   -d '{"input": "Hello", "role": "engineering"}'
+ * ```
+ *
+ * Response:
+ * ```json
+ * {
+ *   "message": "Hello, how can I help you today?",
+ *   "usage": {
+ *     "prompt_tokens": 10,
+ *     "completion_tokens": 15,
+ *     "total_tokens": 25
+ *   }
+ * }
+ * 
+ * Note: If no SessionID is provided, one will be created and returned in the `x-session-id` response header.
+ * ```
+ */
 app.post("/chat", async (req, res) => {
   logRequest("/chat", "POST", req.headers, req.body);
 
