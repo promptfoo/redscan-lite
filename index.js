@@ -22,6 +22,19 @@ function logRequest(endpoint, method, headers, body) {
   );
 }
 
+/**
+ * Returns an auth token and its TTL.
+ *
+ * Example request:
+ * ```sh
+ * curl -X POST http://localhost:8080/auth
+ * ```
+ *
+ * Response:
+ * ```json
+ * { "token": "550e8400-e29b-41d4-a716-446655440001", "ttl": 300 }
+ * ```
+ */
 app.post("/auth", (req, res) => {
   logRequest("/auth", "POST", req.headers, req.body);
 
@@ -40,6 +53,19 @@ app.post("/auth", (req, res) => {
   res.json({ token, ttl });
 });
 
+/**
+ * Creates a session.
+ *
+ * Example request:
+ * ```sh
+ * curl -X POST http://localhost:8080/session
+ * ```
+ *
+ * Response:
+ * ```json
+ * { "sessionId": "660e8400-e29b-41d4-a716-446655440002" }
+ * ```
+ */
 app.post("/session", (req, res) => {
   logRequest("/session", "POST", req.headers, req.body);
 
@@ -53,6 +79,32 @@ app.post("/session", (req, res) => {
   res.json({ sessionId });
 });
 
+/**
+ * Sends a message to the API.
+ *
+ * Example request:
+ * ```sh
+ * curl -X POST http://localhost:8080/chat \
+ *   -H "Authorization: Bearer YOUR_TOKEN" \
+ *   -H "x-session-id: YOUR_SESSION_ID" \
+ *   -H "Content-Type: application/json" \
+ *   -d '{"input": "Hello", "role": "engineering"}'
+ * ```
+ *
+ * Response:
+ * ```json
+ * {
+ *   "message": "Hello, how can I help you today?",
+ *   "usage": {
+ *     "prompt_tokens": 10,
+ *     "completion_tokens": 15,
+ *     "total_tokens": 25
+ *   }
+ * }
+ * 
+ * Note: If no SessionID is provided, one will be created and returned in the `x-session-id` response header.
+ * ```
+ */
 app.post("/chat", async (req, res) => {
   logRequest("/chat", "POST", req.headers, req.body);
 
@@ -103,9 +155,7 @@ app.post("/chat", async (req, res) => {
     session.messages.push({ role: "user", content: input });
   }
 
-  // Check if this is the 3rd request (or multiple of 3) for this session
   if (session && session.requestCount % 3 === 0) {
-    // Return an irregular response for debugging practice
     const mockUsage = {
       prompt_tokens: Math.floor(Math.random() * 50) + 10,
       completion_tokens: Math.floor(Math.random() * 100) + 20,
@@ -114,7 +164,7 @@ app.post("/chat", async (req, res) => {
     mockUsage.total_tokens =
       mockUsage.prompt_tokens + mockUsage.completion_tokens;
 
-    const irregularResponses = [
+    const foo = [
       { msg: "Irregular response format", status: "ok", usage: mockUsage }, // Different structure
       {
         data: { text: "Response corrupted", original: input },
@@ -134,12 +184,10 @@ app.post("/chat", async (req, res) => {
       { content: "Different key", usage: mockUsage.total_tokens }, // Usage as just a number
     ];
 
-    const randomIrregular =
-      irregularResponses[Math.floor(Math.random() * irregularResponses.length)];
-    console.log(
-      `[DEBUG] Returning irregular response for session ${sessionId}, request #${session.requestCount}`,
-    );
-    return res.set(responseHeaders).json(randomIrregular);
+    const bar =
+      foo[Math.floor(Math.random() * foo.length)];
+
+    return res.set(responseHeaders).json(bar);
   }
 
   let message;
