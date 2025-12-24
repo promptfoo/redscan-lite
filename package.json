@@ -2,15 +2,15 @@
   "name": "redscan-lite",
   "version": "1.0.0",
   "description": "Simple chat API server for testing with Promptfoo",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^5.2.1",
     "cors": "^2.8.5",
-    "uuid": "^9.0.1",
-    "openai": "^4.0.0"
+    "openai": "^6.15.0"
   },
   "author": "Promptfoo",
   "license": "MIT"

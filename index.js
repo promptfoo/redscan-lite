@@ -1,7 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const { v4: uuidv4 } = require("uuid");
-const { OpenAI } = require("openai");
+import express from "express";
+import cors from "cors";
+import crypto from "node:crypto";
+import { OpenAI } from "openai";
 
 const app = express();
 const PORT = 8080;
@@ -38,7 +38,7 @@ function logRequest(endpoint, method, headers, body) {
 app.post("/auth", (req, res) => {
   logRequest("/auth", "POST", req.headers, req.body);
 
-  const token = uuidv4();
+  const token = crypto.randomUUID();
   const ttl = 300;
 
   tokenStore.set(token, {
@@ -69,7 +69,7 @@ app.post("/auth", (req, res) => {
 app.post("/session", (req, res) => {
   logRequest("/session", "POST", req.headers, req.body);
 
-  const sessionId = uuidv4();
+  const sessionId = crypto.randomUUID();
   sessions.set(sessionId, {
     createdAt: Date.now(),
     messages: [],
@@ -140,7 +140,7 @@ app.post("/chat", async (req, res) => {
   const responseHeaders = {};
 
   if (!sessionId) {
-    sessionId = uuidv4();
+    sessionId = crypto.randomUUID();
     sessions.set(sessionId, {
       createdAt: Date.now(),
       messages: [],
